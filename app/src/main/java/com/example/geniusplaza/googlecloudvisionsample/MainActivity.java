@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,10 +57,11 @@ public class MainActivity extends AppCompatActivity {
     public static final int CAMERA_PERMISSIONS_REQUEST = 2;
     public static final int CAMERA_IMAGE_REQUEST = 3;
 
-    public List<String> imageArray;
+    public static List<String> imageArray;
     private TextView mImageDetails;
     private ImageView mMainImage;
     RxPermissions rxPermissions;
+    ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_image_search);
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -183,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
     private void callCloudVision(final Bitmap bitmap) throws IOException {
         // Switch text to loading
         mImageDetails.setText(R.string.loading_message);
+        mProgressBar.setVisibility(View.VISIBLE);
 
         // Do the real work in an async task, because we need to use the network anyway
         new AsyncTask<Object, Void, String>() {
@@ -273,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             protected void onPostExecute(String result) {
+                mProgressBar.setVisibility(View.GONE);
                 mImageDetails.setText(result);
             }
         }.execute();
@@ -349,5 +354,9 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("Arrrayyyy",imageArray.toString());
         return message.toString();
+    }
+    public void translateButtonClicked(View view){
+        Intent i = new Intent(this, TranslateActivity.class);
+        startActivity(i);
     }
 }

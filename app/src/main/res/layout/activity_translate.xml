@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.geniusplaza.googlecloudvisionsample.SpanishTranslation">
+    tools:context="com.example.geniusplaza.googlecloudvisionsample.TranslateActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textViewEnglish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
@@ -15,7 +15,7 @@
         tools:layout_editor_absoluteY="83dp" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textViewSpanish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"

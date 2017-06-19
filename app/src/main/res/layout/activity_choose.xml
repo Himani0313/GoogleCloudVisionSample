@@ -10,7 +10,7 @@
         android:id="@+id/textTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CHOOSE WHAT YOU ARE TAKING PICTURE OF:"
+        android:text="CHOOSE WHAT YOU ARE TAKING A PICTURE OF:"
         android:layout_gravity="center" />
 
     <Button
@@ -36,6 +36,5 @@
         android:text="Landmark"
         android:layout_gravity="center"
         android:onClick="landmarkButtonClicked"/>
-
 
 </LinearLayout>
