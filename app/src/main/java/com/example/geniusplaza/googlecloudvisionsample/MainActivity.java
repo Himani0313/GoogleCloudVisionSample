@@ -35,6 +35,7 @@ import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
 import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -55,8 +56,10 @@ public class MainActivity extends AppCompatActivity {
     public static final int CAMERA_PERMISSIONS_REQUEST = 2;
     public static final int CAMERA_IMAGE_REQUEST = 3;
 
+    public List<String> imageArray;
     private TextView mImageDetails;
     private ImageView mMainImage;
+    RxPermissions rxPermissions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 startGalleryChooser();
+
                             }
                         })
                         .setNegativeButton(R.string.dialog_select_camera, new DialogInterface.OnClickListener() {
@@ -93,9 +98,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startGalleryChooser() {
+        rxPermissions = new RxPermissions(this);
+
         if (PermissionUtils.requestPermission(this, GALLERY_PERMISSIONS_REQUEST, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             Intent intent = new Intent();
-            intent.setType("image/*");
+            intent.setType("image*//*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent, "Select a photo"),
                     GALLERY_IMAGE_REQUEST);
@@ -198,9 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     String packageName = getPackageName();
                                     visionRequest.getRequestHeaders().set(ANDROID_PACKAGE_HEADER, packageName);
-
                                     String sig = PackageManagerUtils.getSignature(getPackageManager(), packageName);
-
                                     visionRequest.getRequestHeaders().set(ANDROID_CERT_HEADER, sig);
                                 }
                             };
@@ -233,6 +238,16 @@ public class MainActivity extends AppCompatActivity {
                             labelDetection.setType("LABEL_DETECTION");
                             labelDetection.setMaxResults(10);
                             add(labelDetection);
+
+                            Feature textDetection = new Feature();
+                            textDetection.setType("TEXT_DETECTION");
+                            textDetection.setMaxResults(10);
+                            add(textDetection);
+
+                            Feature landmarkDetection = new Feature();
+                            landmarkDetection.setType("LANDMARK_DETECTION");
+                            landmarkDetection.setMaxResults(10);
+                            add(landmarkDetection);
                         }});
 
                         // Add the list of one thing to the request
@@ -284,18 +299,55 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String convertResponseToString(BatchAnnotateImagesResponse response) {
-        String message = "I found these things:\n\n";
+        imageArray = new ArrayList<String>();
+        StringBuilder message = new StringBuilder("Results:\n\n");
+        message.append("Object:\n");
 
-        List<EntityAnnotation> labels = response.getResponses().get(0).getLabelAnnotations();
-        if (labels != null) {
-            for (EntityAnnotation label : labels) {
-                message += String.format(Locale.US, "%.3f: %s", label.getScore(), label.getDescription());
-                message += "\n";
+        if (ChooseActivity.optSelected.equals("o")){
+            List<EntityAnnotation> labels = response.getResponses().get(0).getLabelAnnotations();
+            if (labels != null) {
+                imageArray.add(response.getResponses().get(0).getLabelAnnotations().get(0).getDescription());
+                for (EntityAnnotation label : labels) {
+                    message.append(String.format(Locale.getDefault(), "%.3f: %s",
+                            label.getScore(), label.getDescription()));
+                    message.append("\n");
+                }
+            } else {
+                message.append("nothing\n");
             }
-        } else {
-            message += "nothing";
+        }
+        else if(ChooseActivity.optSelected.equals("t")){
+            message.append("Texts:\n");
+            List<EntityAnnotation> texts = response.getResponses().get(0)
+                    .getTextAnnotations();
+            if (texts != null) {
+                imageArray.add(response.getResponses().get(0).getTextAnnotations().get(0).getDescription());
+                for (EntityAnnotation text : texts) {
+                    message.append(String.format(Locale.getDefault(), "%s: %s",
+                            text.getLocale(), text.getDescription()));
+                    message.append("\n");
+                }
+            } else {
+                message.append("nothing\n");
+            }
+        }
+        else if (ChooseActivity.optSelected.equals("l")){
+            message.append("Landmarks:\n");
+            List<EntityAnnotation> landmarks = response.getResponses().get(0)
+                    .getLandmarkAnnotations();
+            if (landmarks != null) {
+                imageArray.add(response.getResponses().get(0).getLandmarkAnnotations().get(0).getDescription());
+                for (EntityAnnotation landmark : landmarks) {
+                    message.append(String.format(Locale.getDefault(), "%.3f: %s",
+                            landmark.getScore(), landmark.getDescription()));
+                    message.append("\n");
+                }
+            } else {
+                message.append("nothing\n");
+            }
         }
 
-        return message;
+        Log.d("Arrrayyyy",imageArray.toString());
+        return message.toString();
     }
 }
