@@ -36,7 +36,6 @@ import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
 import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -56,11 +55,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int GALLERY_IMAGE_REQUEST = 1;
     public static final int CAMERA_PERMISSIONS_REQUEST = 2;
     public static final int CAMERA_IMAGE_REQUEST = 3;
-
+    public static List<String> spanishString;
     public static List<String> imageArray;
     private TextView mImageDetails;
     private ImageView mMainImage;
-    RxPermissions rxPermissions;
     ProgressBar mProgressBar;
 
     @Override
@@ -101,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startGalleryChooser() {
-        rxPermissions = new RxPermissions(this);
+        //rxPermissions = new RxPermissions(this);
 
         if (PermissionUtils.requestPermission(this, GALLERY_PERMISSIONS_REQUEST, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             Intent intent = new Intent();
@@ -305,16 +303,20 @@ public class MainActivity extends AppCompatActivity {
 
     private String convertResponseToString(BatchAnnotateImagesResponse response) {
         imageArray = new ArrayList<String>();
+        spanishString = new ArrayList<String>();
         StringBuilder message = new StringBuilder("Results:\n\n");
         message.append("Object:\n");
 
         if (ChooseActivity.optSelected.equals("o")){
             List<EntityAnnotation> labels = response.getResponses().get(0).getLabelAnnotations();
             if (labels != null) {
+                spanishString.add(response.getResponses().get(0).getLabelAnnotations().get(0).setLocale("es").getDescription());
                 imageArray.add(response.getResponses().get(0).getLabelAnnotations().get(0).getDescription());
+                Log.d("trrrryyy",imageArray.toString());
                 for (EntityAnnotation label : labels) {
                     message.append(String.format(Locale.getDefault(), "%.3f: %s",
                             label.getScore(), label.getDescription()));
+
                     message.append("\n");
                 }
             } else {
