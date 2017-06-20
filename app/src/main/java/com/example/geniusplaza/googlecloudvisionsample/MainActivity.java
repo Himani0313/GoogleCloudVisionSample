@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String FILE_NAME = "temp.jpg";
     private static final String ANDROID_CERT_HEADER = "X-Android-Cert";
     private static final String ANDROID_PACKAGE_HEADER = "X-Android-Package";
-
+    Button translate;
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int GALLERY_PERMISSIONS_REQUEST = 0;
     private static final int GALLERY_IMAGE_REQUEST = 1;
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         mImageDetails = (TextView) findViewById(R.id.image_details);
         mMainImage = (ImageView) findViewById(R.id.main_image);
+        translate = (Button) findViewById(R.id.buttonTranslate);
     }
 
     public void startGalleryChooser() {
@@ -234,8 +236,32 @@ public class MainActivity extends AppCompatActivity {
                         base64EncodedImage.encodeContent(imageBytes);
                         annotateImageRequest.setImage(base64EncodedImage);
 
+                        if (ChooseActivity.optSelected.equals("o")){
+                            annotateImageRequest.setFeatures(new ArrayList<Feature>() {{
+                                Feature labelDetection = new Feature();
+                                labelDetection.setType("LABEL_DETECTION");
+                                labelDetection.setMaxResults(10);
+                                add(labelDetection);
+                            }});
+                        }
+                        else if (ChooseActivity.optSelected.equals("t")){
+                            annotateImageRequest.setFeatures(new ArrayList<Feature>() {{
+                                Feature textDetection = new Feature();
+                                textDetection.setType("TEXT_DETECTION");
+                                textDetection.setMaxResults(10);
+                                add(textDetection);
+                            }});
+                        }
+                        else if (ChooseActivity.optSelected.equals("l")){
+                            annotateImageRequest.setFeatures(new ArrayList<Feature>() {{
+                                Feature landmarkDetection = new Feature();
+                                landmarkDetection.setType("LANDMARK_DETECTION");
+                                landmarkDetection.setMaxResults(10);
+                                add(landmarkDetection);
+                            }});
+                        }
                         // add the features we want
-                        annotateImageRequest.setFeatures(new ArrayList<Feature>() {{
+                        /*annotateImageRequest.setFeatures(new ArrayList<Feature>() {{
                             Feature labelDetection = new Feature();
                             labelDetection.setType("LABEL_DETECTION");
                             labelDetection.setMaxResults(10);
@@ -250,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                             landmarkDetection.setType("LANDMARK_DETECTION");
                             landmarkDetection.setMaxResults(10);
                             add(landmarkDetection);
-                        }});
+                        }});*/
 
                         // Add the list of one thing to the request
                         add(annotateImageRequest);
@@ -277,6 +303,9 @@ public class MainActivity extends AppCompatActivity {
             protected void onPostExecute(String result) {
                 mProgressBar.setVisibility(View.GONE);
                 mImageDetails.setText(result);
+
+                translate.setVisibility(View.VISIBLE);
+
             }
         }.execute();
     }
@@ -310,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
         if (ChooseActivity.optSelected.equals("o")){
             List<EntityAnnotation> labels = response.getResponses().get(0).getLabelAnnotations();
             if (labels != null) {
-                spanishString.add(response.getResponses().get(0).getLabelAnnotations().get(0).setLocale("es").getDescription());
+                //spanishString.add(response.getResponses().get(0).getLabelAnnotations().get(0).setLocale("es").getDescription());
                 imageArray.add(response.getResponses().get(0).getLabelAnnotations().get(0).getDescription());
                 Log.d("trrrryyy",imageArray.toString());
                 for (EntityAnnotation label : labels) {
@@ -328,7 +357,9 @@ public class MainActivity extends AppCompatActivity {
             List<EntityAnnotation> texts = response.getResponses().get(0)
                     .getTextAnnotations();
             if (texts != null) {
-                imageArray.add(response.getResponses().get(0).getTextAnnotations().get(0).getDescription());
+                Log.d("in text",response.getResponses().toString());
+                imageArray.add(response.getResponses().get(0).getTextAnnotations().get(0).getDescription().replace("\n", " "));
+                Log.d("trial", imageArray.toString());
                 for (EntityAnnotation text : texts) {
                     message.append(String.format(Locale.getDefault(), "%s: %s",
                             text.getLocale(), text.getDescription()));
@@ -355,10 +386,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Log.d("Arrrayyyy",imageArray.toString());
+
         return message.toString();
     }
     public void translateButtonClicked(View view){
-        Intent i = new Intent(this, TranslateActivity.class);
-        startActivity(i);
+        if(imageArray == null){
+            Toast.makeText(getApplicationContext(),"TAKE ANOTHER PICTURE",Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Intent i = new Intent(this, TranslateActivity.class);
+            startActivity(i);
+        }
+
+    }
+    public void dictionaryButtonClicked(View view){
+        if(imageArray == null){
+            Toast.makeText(getApplicationContext(),"TAKE ANOTHER PICTURE",Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Intent i = new Intent(this, DictionaryActivity.class);
+            startActivity(i);
+        }
+
     }
 }

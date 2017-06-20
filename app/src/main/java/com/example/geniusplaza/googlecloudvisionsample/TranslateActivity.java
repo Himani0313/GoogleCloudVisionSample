@@ -117,9 +117,11 @@ public class TranslateActivity extends AppCompatActivity {
                 JSONObject jObject = new JSONObject(jsonString);
 
                 JSONArray jArray = jObject.getJSONArray("translations");
+                JSONObject translationObject = jArray.getJSONObject(9);
+                Log.d("holllla",translationObject.getString("spanish"));
                 Log.d("jArray value: ", jArray.toString());
                 Log.d("trryyyyyyyyyy", jArray.get(9).toString());
-                spanishTranslation = jArray.get(9).toString();
+                spanishTranslation = translationObject.getString("spanish");
                 //outputTranslations(jArray.get(9).toString());
 
             } catch (MalformedURLException e) {
