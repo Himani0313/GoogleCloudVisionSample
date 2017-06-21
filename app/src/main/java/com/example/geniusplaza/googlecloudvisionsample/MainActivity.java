@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String FILE_NAME = "temp.jpg";
     private static final String ANDROID_CERT_HEADER = "X-Android-Cert";
     private static final String ANDROID_PACKAGE_HEADER = "X-Android-Package";
-    Button translate;
+    Button translate, dictionaryButton;
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int GALLERY_PERMISSIONS_REQUEST = 0;
     private static final int GALLERY_IMAGE_REQUEST = 1;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mImageDetails;
     private ImageView mMainImage;
     ProgressBar mProgressBar;
-
+    public static Bitmap bitmap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         mImageDetails = (TextView) findViewById(R.id.image_details);
         mMainImage = (ImageView) findViewById(R.id.main_image);
         translate = (Button) findViewById(R.id.buttonTranslate);
+        dictionaryButton = (Button)findViewById(R.id.buttonDictionary);
     }
 
     public void startGalleryChooser() {
@@ -165,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         if (uri != null) {
             try {
                 // scale the image to save on bandwidth
-                Bitmap bitmap =
+                bitmap =
                         scaleBitmapDown(
                                 MediaStore.Images.Media.getBitmap(getContentResolver(), uri),
                                 1200);
@@ -305,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
                 mImageDetails.setText(result);
 
                 translate.setVisibility(View.VISIBLE);
-
+                dictionaryButton.setVisibility(View.VISIBLE);
             }
         }.execute();
     }
@@ -409,4 +411,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
 }

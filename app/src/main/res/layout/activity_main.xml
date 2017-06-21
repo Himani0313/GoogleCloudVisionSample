@@ -39,6 +39,7 @@
         android:text="Translate To Spanish"
         app:layout_anchor="@+id/include"
         app:layout_anchorGravity="bottom"
+        android:visibility="gone"
         android:onClick="translateButtonClicked"/>
 
     <Button
@@ -49,6 +50,7 @@
         android:text="Dictionary"
         app:layout_anchor="@+id/include"
         app:layout_anchorGravity="bottom|center_horizontal"
+        android:visibility="gone"
         android:onClick="dictionaryButtonClicked"/>
 
 </android.support.design.widget.CoordinatorLayout>

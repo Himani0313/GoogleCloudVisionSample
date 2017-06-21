@@ -33,7 +33,8 @@
 
         <activity android:name=".TranslateActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".DictionaryActivity"></activity>
+        <activity android:name=".DictionaryActivity" />
+        <activity android:name=".WordsDatabase"></activity>
     </application>
 
 </manifest>

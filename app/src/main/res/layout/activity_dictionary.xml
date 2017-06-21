@@ -39,5 +39,12 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textSize="20dp" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save to remember"
+            android:id="@+id/addToDatabaseButton"
+            android:layout_gravity="bottom|center_horizontal"
+            android:onClick="addToDatabaseButtonClicked"/>
     </LinearLayout>
 </ScrollView>
